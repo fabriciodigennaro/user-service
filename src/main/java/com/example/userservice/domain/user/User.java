@@ -1,5 +1,6 @@
 package com.example.userservice.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,5 +13,6 @@ public class User {
     private String name;
     private String lastname;
     private String email;
+    @JsonIgnore
     private String password;
 }
