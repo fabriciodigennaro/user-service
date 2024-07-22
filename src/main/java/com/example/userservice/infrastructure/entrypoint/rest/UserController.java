@@ -1,6 +1,8 @@
 package com.example.userservice.infrastructure.entrypoint.rest;
 
+import com.example.userservice.application.getAllUsers.GetAllUsersUseCase;
 import com.example.userservice.domain.user.User;
+import com.example.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.example.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
 import com.example.userservice.infrastructure.entrypoint.rest.response.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,11 +17,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Get users data")
 public class UserController {
+    private final GetAllUsersUseCase getAllUsersUseCase;
+
+    public UserController(GetAllUsersUseCase getAllUsersUseCase) {
+        this.getAllUsersUseCase = getAllUsersUseCase;
+    }
 
     @Operation(summary = "List all users")
     @ApiResponses(value = {
@@ -56,10 +64,14 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getUsers() {
-        User user1 = new User(UUID.randomUUID(), "John", "Doe", "john.doe@example.com", "password123");
-        User user2 = new User(UUID.randomUUID(), "Jane", "Smith", "jane.smith@example.com", "password123");
-        return Arrays.asList(user1, user2);
+    public UsersResponse getUsers() {
+
+        List<User> users = getAllUsersUseCase.execute();
+        List<UserDTO> mappedUsers = users.stream()
+                .map(user -> new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getEmail()))
+                .collect(Collectors.toList());
+
+        return new UsersResponse(mappedUsers);
     }
 
     @GetMapping("/{id}")
