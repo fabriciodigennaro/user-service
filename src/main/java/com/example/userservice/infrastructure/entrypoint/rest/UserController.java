@@ -74,6 +74,7 @@ public class UserController {
         return new UsersResponse(mappedUsers);
     }
 
+    //TODO replace mock with real data from DB
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public User getUserById(@PathVariable UUID id) {
