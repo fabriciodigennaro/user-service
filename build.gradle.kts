@@ -1,3 +1,5 @@
+import com.adarshr.gradle.testlogger.theme.ThemeType
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.1.1"
@@ -29,10 +31,17 @@ dependencies {
 	implementation("org.flywaydb:flyway-core:9.11.0")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
-
+	// Test dependencies
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation(platform("org.junit:junit-bom:5.10.2"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testImplementation("org.assertj:assertj-core:3.25.1")
+	testImplementation("org.mockito:mockito-core:3.+")
 
+	testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.7"))
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:postgresql")
 
 	// Lombok
 	compileOnly("org.projectlombok:lombok:1.18.32")
@@ -43,6 +52,65 @@ dependencies {
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
 }
 
-tasks.withType<Test> {
-	useJUnitPlatform()
+tasks.apply {
+	test {
+		enableAssertions = true
+		useJUnitPlatform {
+			excludeTags("integration")
+			excludeTags("component")
+			excludeTags("contract")
+		}
+	}
+
+	testlogger {
+		theme = ThemeType.STANDARD_PARALLEL
+		showExceptions = true
+		showStackTraces = true
+		showFullStackTraces = false
+		showCauses = true
+		slowThreshold = 5000
+		showSummary = true
+		showSimpleNames = false
+		showPassed = false
+		showSkipped = true
+		showFailed = true
+		showOnlySlow = false
+		showStandardStreams = false
+		showPassedStandardStreams = false
+		showSkippedStandardStreams = true
+		showFailedStandardStreams = true
+		logLevel = LogLevel.LIFECYCLE
+	}
+
+	task<Test>("integrationTest") {
+		group = "verification"
+		description = "Runs integration tests."
+		useJUnitPlatform {
+			includeTags("integration")
+		}
+		shouldRunAfter(test)
+	}
+
+	task<Test>("contractTest") {
+		group = "verification"
+		description = "Runs contract tests."
+		useJUnitPlatform {
+			includeTags("contract")
+		}
+		shouldRunAfter("integrationTest")
+	}
+
+	task<Test>("componentTest") {
+		group = "verification"
+		description = "Runs component tests."
+		useJUnitPlatform {
+			includeTags("component")
+		}
+		shouldRunAfter("contractTest")
+	}
+
+	check {
+		dependsOn("integrationTest", "contractTest", "componentTest")
+	}
+
 }
