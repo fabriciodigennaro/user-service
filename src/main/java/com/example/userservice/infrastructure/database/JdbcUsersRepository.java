@@ -7,8 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Collections.emptyMap;
 
@@ -29,6 +28,21 @@ public class JdbcUsersRepository implements UsersRepository {
                 emptyMap(),
                 new UserRowMapper()
         );
+    }
+
+    @Override
+    public Optional<User> getUserById(UUID userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("user_id", userId);
+        return namedParameterJdbcTemplate.query(
+                """
+                   SELECT * from users
+                   WHERE user_id = :userId
+                """,
+                params,
+                new UserRowMapper()
+        )
+                .stream().findFirst();
     }
 
     private class UserRowMapper implements RowMapper<User> {

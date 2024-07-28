@@ -1,13 +1,11 @@
 package com.example.userservice.infrastructure.entrypoint.rest.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.UUID;
 
-@Setter
-@Getter
+@Data
 public class UserDTO {
     @Schema(
             description = "User ID",
