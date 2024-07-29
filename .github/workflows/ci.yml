@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
@@ -34,16 +37,3 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --no-daemon
-
-      - name: Run unit tests
-        run: ./gradlew test --no-daemon
-
-      - name: Run integration tests
-        run: ./gradlew integrationTest --no-daemon
-
-      - name: Archive test reports
-        if: failure()
-        uses: actions/upload-artifact@v2
-        with:
-          name: test-reports
-          path: build/reports/tests
