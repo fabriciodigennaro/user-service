@@ -139,5 +139,4 @@ This project utilizes the following libraries and frameworks:
 For more information, please refer to the official documentation of each library.
 
 ---
-CI - test
 **Note:** Ensure that the necessary database and environment configurations are properly set before running the application.
