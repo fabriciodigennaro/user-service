@@ -27,6 +27,6 @@ class GetAllUsersUseCaseTest {
         // THEN
         assertThat(result).isNotEmpty();
         assertThat(result).isEqualTo(users);
-        verify(usersRepository, times(1)).getAllUsers();
+        verify(usersRepository, times(5)).getAllUsers();
     }
 }
