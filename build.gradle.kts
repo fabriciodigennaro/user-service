@@ -42,6 +42,7 @@ dependencies {
 	testImplementation(platform("org.testcontainers:testcontainers-bom:1.20.1"))
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
+	testImplementation("com.tngtech.archunit:archunit:1.3.0")
 
 	// Lombok
 	compileOnly("org.projectlombok:lombok:1.18.34")
