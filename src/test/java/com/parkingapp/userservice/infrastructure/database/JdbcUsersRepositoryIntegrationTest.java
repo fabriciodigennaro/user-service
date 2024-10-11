@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,39 @@ public class JdbcUsersRepositoryIntegrationTest {
 
         // THEN
         assertThat(result).isEqualTo(expectedUsers);
+    }
 
+    @Test
+    void shouldReturnAUserByUserId() {
+        // GIVEN
+        UUID userId = UUID.randomUUID();
+        User user1 = new User(userId, "name1", "lastname1", "user1@mail.com", "1234abc");
+        User user2 = new User(UUID.randomUUID(), "name2", "lastname2", "user2@mail.com", "1234abc");
+
+        givenExistingUser(user1);
+        givenExistingUser(user2);
+
+        // WHEN
+        Optional<User> result = usersRepository.getUserById(userId);
+
+        // THEN
+        assertThat(result).isPresent();
+        assertThat(result).isEqualTo(Optional.of(user1));
+    }
+
+    @Test
+    void shouldReturnAEmptyOptionalWhenUserIdNotFound() {
+        // GIVEN
+        UUID expectedUserId = UUID.randomUUID();
+        User user = new User(UUID.randomUUID(), "name2", "lastname2", "user2@mail.com", "1234abc");
+
+        givenExistingUser(user);
+
+        // WHEN
+        Optional<User> result = usersRepository.getUserById(expectedUserId);
+
+        // THEN
+        assertThat(result).isEmpty();
     }
 
     private void givenExistingUser(User user) {
