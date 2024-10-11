@@ -2,7 +2,9 @@
 
 ## Overview
 
-User Service is a Java-based microservice designed to manage user-related functionalities such as registration, login, and user information. This project utilizes Spring Boot, and includes support for database migrations, API documentation, and testing frameworks.
+User Service is a Java-based microservice designed to manage user-related functionalities such as registration, login,
+and user information. This project utilizes Spring Boot, and includes support for database migrations,
+API documentation, and testing frameworks.
 
 ## Features
 
@@ -15,8 +17,8 @@ User Service is a Java-based microservice designed to manage user-related functi
 
 ## Technologies
 
-- Java 17
-- Spring Boot 3.1.1
+- Java 21
+- Spring Boot 3.X.X
 - PostgreSQL
 - Flyway
 - SpringDoc OpenAPI
@@ -30,7 +32,7 @@ User Service is a Java-based microservice designed to manage user-related functi
 
 ### Prerequisites
 
-- Java 17
+- Java 21
 - Gradle
 - PostgreSQL
 
@@ -56,14 +58,6 @@ User Service is a Java-based microservice designed to manage user-related functi
    ```sh
    ./gradlew bootRun
    ```
-
-## Usage
-
-The API endpoints for user management include:
-
-- `POST /api/users/register`: Register a new user
-- `POST /api/users/login`: Login a user
-- `GET /api/users/{id}`: Get user information by ID
 
 ### API Documentation
 

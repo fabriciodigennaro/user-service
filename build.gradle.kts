@@ -2,18 +2,18 @@ import com.adarshr.gradle.testlogger.theme.ThemeType
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.1.1"
-	id("io.spring.dependency-management") version "1.1.0"
+	id("org.springframework.boot") version "3.3.3"
+	id("io.spring.dependency-management") version "1.1.6"
 	id("com.adarshr.test-logger") version "4.0.0"
-	kotlin("jvm") version "1.6.21"
-	kotlin("plugin.spring") version "1.6.21"
+	kotlin("jvm") version "2.0.20"
+	kotlin("plugin.spring") version "2.0.20"
 }
 
-group = "com.example"
+group = "com.parkingapp"
 version = "0.0.1-SNAPSHOT"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
@@ -24,32 +24,32 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
-	implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
-	implementation("org.jetbrains:annotations:24.0.0")
-	implementation("org.postgresql:postgresql:42.7.3")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+	implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
+	implementation("org.jetbrains:annotations:24.1.0")
+	implementation("org.postgresql:postgresql:42.7.4")
 	implementation("org.flywaydb:flyway-core:9.11.0")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
 	// Test dependencies
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation(platform("org.junit:junit-bom:5.10.2"))
+	testImplementation(platform("org.junit:junit-bom:5.11.0"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testImplementation("org.assertj:assertj-core:3.25.1")
-	testImplementation("org.mockito:mockito-core:3.+")
+	testImplementation("org.assertj:assertj-core:3.26.3")
+	testImplementation("org.mockito:mockito-core:5.+")
 
-	testImplementation(platform("org.testcontainers:testcontainers-bom:1.19.7"))
+	testImplementation(platform("org.testcontainers:testcontainers-bom:1.20.1"))
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
 
 	// Lombok
-	compileOnly("org.projectlombok:lombok:1.18.32")
-	annotationProcessor("org.projectlombok:lombok:1.18.32")
+	compileOnly("org.projectlombok:lombok:1.18.34")
+	annotationProcessor("org.projectlombok:lombok:1.18.34")
 
 	// Lombok
-	testCompileOnly("org.projectlombok:lombok:1.18.32")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.32")
+	testCompileOnly("org.projectlombok:lombok:1.18.34")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 }
 
 tasks.apply {
