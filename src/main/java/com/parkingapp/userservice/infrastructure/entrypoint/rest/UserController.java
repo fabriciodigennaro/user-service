@@ -1,7 +1,7 @@
 package com.parkingapp.userservice.infrastructure.entrypoint.rest;
 
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
-import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
+import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
@@ -20,18 +20,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Users", description = "Get users data")
 public class UserController {
     private final GetAllUsersUseCase getAllUsersUseCase;
-    private final GetUserByIdUseCase getUserByIdUseCase;
+    private final GetUserByEmailUseCase getUserByEmailUseCase;
 
-    public UserController(GetAllUsersUseCase getAllUsersUseCase, GetUserByIdUseCase getUserByIdUseCase) {
+    public UserController(GetAllUsersUseCase getAllUsersUseCase, GetUserByEmailUseCase getUserByEmailUseCase) {
         this.getAllUsersUseCase = getAllUsersUseCase;
-        this.getUserByIdUseCase = getUserByIdUseCase;
+        this.getUserByEmailUseCase = getUserByEmailUseCase;
     }
 
     @Operation(summary = "List all users")
@@ -121,12 +120,12 @@ public class UserController {
         )
     })
 
-    @GetMapping("/{id}")
+    @GetMapping("/{email}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getUserById(
+    public ResponseEntity<Object> getUserByEmail(
         @Parameter(description = "UUID of the user to be fetched", example = "406dcf63-d2da-4d09-be5f-f2c53778c33d")
-        @PathVariable UUID id) {
-        Optional<User> user = getUserByIdUseCase.execute(id);
+        @PathVariable String email) {
+        Optional<User> user = getUserByEmailUseCase.execute(email);
 
         if (user.isPresent()) {
             UserDTO userDTO = new UserDTO(

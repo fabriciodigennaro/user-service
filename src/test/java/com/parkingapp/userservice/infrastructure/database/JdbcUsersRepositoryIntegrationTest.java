@@ -70,9 +70,8 @@ class JdbcUsersRepositoryIntegrationTest {
     @Test
     void shouldReturnAUserByUserId() {
         // GIVEN
-        UUID userId = UUID.randomUUID();
         User user1 = new User(
-            userId,
+            UUID.randomUUID(),
             "name1",
             "lastname1",
             "user1@mail.com",
@@ -92,7 +91,7 @@ class JdbcUsersRepositoryIntegrationTest {
         givenExistingUser(user2);
 
         // WHEN
-        Optional<User> result = usersRepository.getUserById(userId);
+        Optional<User> result = usersRepository.getUserByEmail(user1.getEmail());
 
         // THEN
         assertThat(result).isPresent().isEqualTo(Optional.of(user1));
@@ -101,7 +100,7 @@ class JdbcUsersRepositoryIntegrationTest {
     @Test
     void shouldReturnAEmptyOptionalWhenUserIdNotFound() {
         // GIVEN
-        UUID expectedUserId = UUID.randomUUID();
+        String expectedUserEmail = "dummy@test.com";
         User user = new User(
             UUID.randomUUID(),
             "name2",
@@ -114,7 +113,7 @@ class JdbcUsersRepositoryIntegrationTest {
         givenExistingUser(user);
 
         // WHEN
-        Optional<User> result = usersRepository.getUserById(expectedUserId);
+        Optional<User> result = usersRepository.getUserByEmail(expectedUserEmail);
 
         // THEN
         assertThat(result).isEmpty();

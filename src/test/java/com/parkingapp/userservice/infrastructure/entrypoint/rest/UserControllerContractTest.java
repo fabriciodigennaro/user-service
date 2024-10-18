@@ -3,7 +3,7 @@ package com.parkingapp.userservice.infrastructure.entrypoint.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
-import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
+import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
 import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
@@ -42,7 +42,7 @@ class UserControllerContractTest {
     private GetAllUsersUseCase getAllUsersUseCase;
 
     @MockBean
-    private GetUserByIdUseCase getUserByIdUseCase;
+    private GetUserByEmailUseCase getUserByEmailUseCase;
 
     UUID userId = UUID.randomUUID();
     String name = "john";
@@ -104,7 +104,7 @@ class UserControllerContractTest {
         @Test
         void shouldGetAUserById() throws JsonProcessingException {
             // GIVEN
-            when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.of(user1));
+            when(getUserByEmailUseCase.execute(user1.getEmail())).thenReturn(Optional.of(user1));
             UserDTO userDto1 = new UserDTO(user1.getId(), user1.getName(), user1.getLastname(), user1.getEmail());
 
             String expectedResponse = objectMapper.writeValueAsString(
@@ -114,43 +114,43 @@ class UserControllerContractTest {
             );
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getId());
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getEmail());
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .body(CoreMatchers.equalTo(expectedResponse));
 
-            verify(getUserByIdUseCase).execute(user1.getId());
+            verify(getUserByEmailUseCase).execute(user1.getEmail());
         }
 
         @Test
         void shouldReturn404WhenUserNotFound() {
             // GIVEN
-            when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.empty());
+            when(getUserByEmailUseCase.execute(user1.getEmail())).thenReturn(Optional.empty());
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getId());
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getEmail());
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.NOT_FOUND.value());
 
-            verify(getUserByIdUseCase).execute(user1.getId());
+            verify(getUserByEmailUseCase).execute(user1.getEmail());
         }
 
         @Test
         void shouldReturn500WhenErrorOccurs() {
             // GIVEN
-            when(getUserByIdUseCase.execute(userId)).thenThrow(new RuntimeException("ops"));
+            when(getUserByEmailUseCase.execute(email)).thenThrow(new RuntimeException("ops"));
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(userId);
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(email);
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            verify(getUserByIdUseCase).execute(userId);
+            verify(getUserByEmailUseCase).execute(email);
         }
     }
 
@@ -163,14 +163,14 @@ class UserControllerContractTest {
                 .get("/users");
     }
 
-    private MockMvcResponse whenARequestToGetAUserByIdIsReceived(UUID userId) {
+    private MockMvcResponse whenARequestToGetAUserByIdIsReceived(String email) {
         return RestAssuredMockMvc
                 .given()
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
-                .pathParam("id", userId.toString())
+                .pathParam("email", email)
                 .when()
-                .get("/users/{id}");
+                .get("/users/{email}");
     }
 
 }

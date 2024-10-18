@@ -1,4 +1,4 @@
-package com.parkingapp.userservice.application.getuserbyid;
+package com.parkingapp.userservice.application.getuserbyemail;
 
 import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
@@ -14,45 +14,47 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class GetUserByIdUseCaseTest {
+class GetUserByEmailUseCaseTest {
     private final UsersRepository usersRepository = mock(UsersRepository.class);
-    private final GetUserByIdUseCase useCase = new GetUserByIdUseCase(usersRepository);
+    private final GetUserByEmailUseCase useCase = new GetUserByEmailUseCase(usersRepository);
 
     @Test
     void shouldReturnAUserSearchingById() {
         // GIVEN
         UUID userId = UUID.randomUUID();
-        User user = new User(userId,
+        String email = "dummy@email.com";
+        User user = new User(
+            userId,
             "name",
             "lastname",
-            "dummy@email.com",
+            email,
             "1234",
             Roles.USER
         );
-        when(usersRepository.getUserById(userId)).thenReturn(Optional.of(user));
+        when(usersRepository.getUserByEmail(email)).thenReturn(Optional.of(user));
 
         // WHEN
-        Optional<User> result = useCase.execute(userId);
+        Optional<User> result = useCase.execute(email);
 
         // THEN
         assertThat(result).isPresent();
         assertThat(result).isEqualTo(Optional.of(user));
         assertThat(result.get().getId()).isEqualTo(userId);
-        verify(usersRepository, times(1)).getUserById(userId);
+        verify(usersRepository, times(1)).getUserByEmail(email);
     }
 
     @Test
     void shouldReturnAEmptyOptionalWhenUserNotFound() {
         // GIVEN
-        UUID userId = UUID.randomUUID();
-        when(usersRepository.getUserById(userId)).thenReturn(Optional.empty());
+        String email = "dummy@email.com";
+        when(usersRepository.getUserByEmail(email)).thenReturn(Optional.empty());
 
         // WHEN
-        Optional<User> result = useCase.execute(userId);
+        Optional<User> result = useCase.execute(email);
 
         // THEN
         assertThat(result).isEmpty();
-        verify(usersRepository, times(1)).getUserById(userId);
+        verify(usersRepository, times(1)).getUserByEmail(email);
     }
 
 }

@@ -32,18 +32,39 @@ public class JdbcUsersRepository implements UsersRepository {
     }
 
     @Override
-    public Optional<User> getUserById(UUID userId) {
+    public Optional<User> getUserByEmail(String email) {
         Map<String, Object> params = new HashMap<>();
-        params.put("userId", userId);
+        params.put("email", email);
         return namedParameterJdbcTemplate.query(
                 """
                        SELECT * from users
-                       WHERE id = :userId
+                       WHERE email = :email
                     """,
                 params,
                 new UserRowMapper()
             )
             .stream().findFirst();
+    }
+
+    @Override
+    public boolean save(User user) {
+        String sql =
+            """
+                INSERT INTO users (id, name, lastname, email, password, role, updated)
+                VALUES (:id, :name, :lastname, :email, :password, :role, CURRENT_TIMESTAMP)
+            """;
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", user.getId());
+        params.put("name", user.getName());
+        params.put("lastname", user.getLastname());
+        params.put("email", user.getEmail());
+        params.put("password", user.getPassword());
+        params.put("role", user.getRole());
+
+        int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
+
+        return rowsAffected > 0;
     }
 
     private static class UserRowMapper implements RowMapper<User> {
