@@ -1,5 +1,6 @@
 package com.parkingapp.userservice.infrastructure.database;
 
+import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,7 +14,7 @@ import static java.util.Collections.emptyMap;
 
 public class JdbcUsersRepository implements UsersRepository {
 
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     public JdbcUsersRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -45,7 +46,7 @@ public class JdbcUsersRepository implements UsersRepository {
             .stream().findFirst();
     }
 
-    private class UserRowMapper implements RowMapper<User> {
+    private static class UserRowMapper implements RowMapper<User> {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new User(
@@ -53,7 +54,8 @@ public class JdbcUsersRepository implements UsersRepository {
                 rs.getString("name"),
                 rs.getString("lastname"),
                 rs.getString("email"),
-                rs.getString("password")
+                rs.getString("password"),
+                Roles.valueOf(rs.getString("role"))
             );
         }
     }

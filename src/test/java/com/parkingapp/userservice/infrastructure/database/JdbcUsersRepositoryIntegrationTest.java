@@ -1,5 +1,6 @@
 package com.parkingapp.userservice.infrastructure.database;
 
+import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 import com.parkingapp.userservice.infrastructure.fixtures.initializers.testannotation.IntegrationTest;
@@ -30,16 +31,30 @@ class JdbcUsersRepositoryIntegrationTest {
     @BeforeEach
     public void setUp() {
         JdbcTestUtils.deleteFromTables(
-                namedParameterJdbcTemplate.getJdbcTemplate(),
-                "users"
+            namedParameterJdbcTemplate.getJdbcTemplate(),
+            "users"
         );
     }
 
     @Test
     void shouldReturnAllUsers() {
         // GIVEN
-        User user1 = new User(UUID.randomUUID(), "name1", "lastname1", "user1@mail.com", "1234abc");
-        User user2 = new User(UUID.randomUUID(), "name2", "lastname2", "user2@mail.com", "1234abc");
+        User user1 = new User(
+            UUID.randomUUID(),
+            "name1",
+            "lastname1",
+            "user1@mail.com",
+            "1234abc",
+            Roles.USER
+        );
+        User user2 = new User(
+            UUID.randomUUID(),
+            "name2",
+            "lastname2",
+            "user2@mail.com",
+            "1234abc",
+            Roles.USER
+        );
         List<User> expectedUsers = List.of(user1, user2);
 
         givenExistingUser(user1);
@@ -56,8 +71,22 @@ class JdbcUsersRepositoryIntegrationTest {
     void shouldReturnAUserByUserId() {
         // GIVEN
         UUID userId = UUID.randomUUID();
-        User user1 = new User(userId, "name1", "lastname1", "user1@mail.com", "1234abc");
-        User user2 = new User(UUID.randomUUID(), "name2", "lastname2", "user2@mail.com", "1234abc");
+        User user1 = new User(
+            userId,
+            "name1",
+            "lastname1",
+            "user1@mail.com",
+            "1234abc",
+            Roles.USER
+        );
+        User user2 = new User(
+            UUID.randomUUID(),
+            "name2",
+            "lastname2",
+            "user2@mail.com",
+            "1234abc",
+            Roles.USER
+        );
 
         givenExistingUser(user1);
         givenExistingUser(user2);
@@ -73,7 +102,14 @@ class JdbcUsersRepositoryIntegrationTest {
     void shouldReturnAEmptyOptionalWhenUserIdNotFound() {
         // GIVEN
         UUID expectedUserId = UUID.randomUUID();
-        User user = new User(UUID.randomUUID(), "name2", "lastname2", "user2@mail.com", "1234abc");
+        User user = new User(
+            UUID.randomUUID(),
+            "name2",
+            "lastname2",
+            "user2@mail.com",
+            "1234abc",
+            Roles.USER
+        );
 
         givenExistingUser(user);
 
@@ -86,15 +122,15 @@ class JdbcUsersRepositoryIntegrationTest {
 
     private void givenExistingUser(User user) {
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("id", user.getId())
-                .addValue("name", user.getName())
-                .addValue("lastname", user.getLastname())
-                .addValue("email", user.getEmail())
-                .addValue("password", user.getPassword());
+            .addValue("id", user.getId())
+            .addValue("name", user.getName())
+            .addValue("lastname", user.getLastname())
+            .addValue("email", user.getEmail())
+            .addValue("password", user.getPassword());
 
         namedParameterJdbcTemplate.update(
-                "INSERT INTO users(id, name, lastname, email, password) VALUES (:id, :name, :lastname, :email, :password);",
-                params
+            "INSERT INTO users(id, name, lastname, email, password) VALUES (:id, :name, :lastname, :email, :password);",
+            params
         );
     }
 

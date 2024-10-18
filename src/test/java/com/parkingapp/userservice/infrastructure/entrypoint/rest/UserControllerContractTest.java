@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
 import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
+import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
@@ -47,14 +48,21 @@ class UserControllerContractTest {
     String name = "john";
     String lastname = "doe";
     String email = "jon@mail.com";
-    User user1 = new User(userId, name, lastname, email, "123");
+    User user1 = new User(userId, name, lastname, email, "123", Roles.USER);
 
     @Nested
     class GetAllUsers {
         @Test
         void shouldGetAllUsers() throws JsonProcessingException {
             // GIVEN
-            User user2 = new User(UUID.randomUUID(), "max", "steel", "max@mail.com", "12");
+            User user2 = new User(
+                UUID.randomUUID(),
+                "max",
+                "steel",
+                "max@mail.com",
+                "12",
+                Roles.USER
+            );
             when(getAllUsersUseCase.execute()).thenReturn(List.of(user1, user2));
             UserDTO userDto1 = new UserDTO(user1.getId(), user1.getName(), user1.getLastname(), user1.getEmail());
             UserDTO userDto2 = new UserDTO(user2.getId(), user2.getName(), user2.getLastname(), user2.getEmail());
@@ -117,7 +125,7 @@ class UserControllerContractTest {
         }
 
         @Test
-        void shouldReturn404WhenUserNotFound() throws JsonProcessingException {
+        void shouldReturn404WhenUserNotFound() {
             // GIVEN
             when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.empty());
 

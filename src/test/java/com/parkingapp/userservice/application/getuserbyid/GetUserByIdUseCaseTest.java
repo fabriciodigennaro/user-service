@@ -1,5 +1,6 @@
 package com.parkingapp.userservice.application.getuserbyid;
 
+import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,13 @@ class GetUserByIdUseCaseTest {
     void shouldReturnAUserSearchingById() {
         // GIVEN
         UUID userId = UUID.randomUUID();
-        User user = new User(userId, "name", "lastname", "dummy@email.com", "1234");
+        User user = new User(userId,
+            "name",
+            "lastname",
+            "dummy@email.com",
+            "1234",
+            Roles.USER
+        );
         when(usersRepository.getUserById(userId)).thenReturn(Optional.of(user));
 
         // WHEN
