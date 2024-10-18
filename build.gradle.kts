@@ -21,6 +21,8 @@ repositories {
 }
 
 dependencies {
+	val REST_ASSURED = "5.5.0"
+
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -42,6 +44,12 @@ dependencies {
 	testImplementation(platform("org.testcontainers:testcontainers-bom:1.20.1"))
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
+	testImplementation("com.tngtech.archunit:archunit:1.3.0")
+	testImplementation("io.rest-assured:rest-assured:$REST_ASSURED")
+	testImplementation("io.rest-assured:json-path:$REST_ASSURED")
+	testImplementation("io.rest-assured:xml-path:$REST_ASSURED")
+	testImplementation("io.rest-assured:spring-mock-mvc:$REST_ASSURED")
+	testImplementation("io.rest-assured:spring-commons:$REST_ASSURED")
 
 	// Lombok
 	compileOnly("org.projectlombok:lombok:1.18.34")
@@ -110,7 +118,7 @@ tasks.apply {
 	}
 
 	check {
-		dependsOn("integrationTest", "contractTest", "componentTest")
+		dependsOn(test,"integrationTest", "contractTest", "componentTest")
 	}
 
 }

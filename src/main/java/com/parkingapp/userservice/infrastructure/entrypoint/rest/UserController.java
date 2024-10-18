@@ -101,6 +101,16 @@ public class UserController {
                     }
             ),
             @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    }
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Internal server error",
                     content = {
