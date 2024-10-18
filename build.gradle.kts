@@ -21,43 +21,49 @@ repositories {
 }
 
 dependencies {
+	val ANNOTATIONS = "24.1.0"
+	val ARCHUNIT = "1.3.0"
+	val ASSERTJ = "3.26.3"
+	val FLYWAY = "9.11.0"
+	val LOMBOK = "1.18.34"
+	val MOCKITO = "5.+"
+	val OPEN_API = "2.6.0"
+	val POSTGRE = "42.7.4"
 	val REST_ASSURED = "5.5.0"
+
+	annotationProcessor("org.projectlombok:lombok:$LOMBOK")
+
+	compileOnly("org.projectlombok:lombok:$LOMBOK")
 
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
-	implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
-	implementation("org.jetbrains:annotations:24.1.0")
-	implementation("org.postgresql:postgresql:42.7.4")
-	implementation("org.flywaydb:flyway-core:9.11.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$OPEN_API")
+	implementation("org.jetbrains:annotations:$ANNOTATIONS")
+	implementation("org.postgresql:postgresql:$POSTGRE")
+	implementation("org.flywaydb:flyway-core:$FLYWAY")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 
-	// Test dependencies
+	testAnnotationProcessor("org.projectlombok:lombok:$LOMBOK")
+
+	testCompileOnly("org.projectlombok:lombok:$LOMBOK")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation(platform("org.junit:junit-bom:5.11.0"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testImplementation("org.assertj:assertj-core:3.26.3")
-	testImplementation("org.mockito:mockito-core:5.+")
-
+	testImplementation("org.assertj:assertj-core:$ASSERTJ")
+	testImplementation("org.mockito:mockito-core:$MOCKITO")
 	testImplementation(platform("org.testcontainers:testcontainers-bom:1.20.1"))
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
-	testImplementation("com.tngtech.archunit:archunit:1.3.0")
+	testImplementation("com.tngtech.archunit:archunit:$ARCHUNIT")
 	testImplementation("io.rest-assured:rest-assured:$REST_ASSURED")
 	testImplementation("io.rest-assured:json-path:$REST_ASSURED")
 	testImplementation("io.rest-assured:xml-path:$REST_ASSURED")
 	testImplementation("io.rest-assured:spring-mock-mvc:$REST_ASSURED")
 	testImplementation("io.rest-assured:spring-commons:$REST_ASSURED")
 
-	// Lombok
-	compileOnly("org.projectlombok:lombok:1.18.34")
-	annotationProcessor("org.projectlombok:lombok:1.18.34")
-
-	// Lombok
-	testCompileOnly("org.projectlombok:lombok:1.18.34")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.apply {

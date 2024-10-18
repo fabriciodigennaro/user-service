@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @IntegrationTest
 @WithPostgreSql
-public class JdbcUsersRepositoryIntegrationTest {
+class JdbcUsersRepositoryIntegrationTest {
 
     @Autowired
     private UsersRepository usersRepository;
@@ -36,7 +36,7 @@ public class JdbcUsersRepositoryIntegrationTest {
     }
 
     @Test
-    public void shouldReturnAllUsers() {
+    void shouldReturnAllUsers() {
         // GIVEN
         User user1 = new User(UUID.randomUUID(), "name1", "lastname1", "user1@mail.com", "1234abc");
         User user2 = new User(UUID.randomUUID(), "name2", "lastname2", "user2@mail.com", "1234abc");
@@ -66,8 +66,7 @@ public class JdbcUsersRepositoryIntegrationTest {
         Optional<User> result = usersRepository.getUserById(userId);
 
         // THEN
-        assertThat(result).isPresent();
-        assertThat(result).isEqualTo(Optional.of(user1));
+        assertThat(result).isPresent().isEqualTo(Optional.of(user1));
     }
 
     @Test

@@ -12,7 +12,7 @@ public class DatabaseConfig {
 
     @Bean
     public UsersRepository usersRepository(
-            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+        NamedParameterJdbcTemplate namedParameterJdbcTemplate
     ) {
         return new JdbcUsersRepository(namedParameterJdbcTemplate);
     }

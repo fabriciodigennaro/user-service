@@ -1,7 +1,7 @@
 package com.parkingapp.userservice.infrastructure.entrypoint.rest;
 
-import com.parkingapp.userservice.application.getAllUsers.GetAllUsersUseCase;
-import com.parkingapp.userservice.application.getUserById.GetUserByIdUseCase;
+import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
+import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
@@ -36,35 +36,35 @@ public class UserController {
 
     @Operation(summary = "List all users")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Successful response",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = UsersResponse.class)
-                            )
-                    }),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Bad request",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    }
-            )
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successful response",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UsersResponse.class)
+                )
+            }),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                )
+            }
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                )
+            }
+        )
     })
 
     @GetMapping
@@ -73,68 +73,67 @@ public class UserController {
 
         List<User> users = getAllUsersUseCase.execute();
         List<UserDTO> mappedUsers = users.stream()
-                .map(user -> new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getEmail()))
-                .collect(Collectors.toList());
+            .map(user -> new UserDTO(user.getId(), user.getName(), user.getLastname(), user.getEmail())).toList();
 
         return new UsersResponse(mappedUsers);
     }
 
     @Operation(summary = "Get user by ID")
     @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Successful response",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = UsersResponse.class)
-                            )
-                    }),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Bad request",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    }
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class)
-                            )
-                    }
-            )
+        @ApiResponse(
+            responseCode = "200",
+            description = "Successful response",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UsersResponse.class)
+                )
+            }),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                )
+            }
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "User not found",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                )
+            }
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error",
+            content = {
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ErrorResponse.class)
+                )
+            }
+        )
     })
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity getUserById(
-            @Parameter(description = "UUID of the user to be fetched", example = "406dcf63-d2da-4d09-be5f-f2c53778c33d")
-            @PathVariable UUID id) {
+    public ResponseEntity<Object> getUserById(
+        @Parameter(description = "UUID of the user to be fetched", example = "406dcf63-d2da-4d09-be5f-f2c53778c33d")
+        @PathVariable UUID id) {
         Optional<User> user = getUserByIdUseCase.execute(id);
 
         if (user.isPresent()) {
             UserDTO userDTO = new UserDTO(
-                    user.get().getId(),
-                    user.get().getName(),
-                    user.get().getLastname(),
-                    user.get().getEmail()
+                user.get().getId(),
+                user.get().getName(),
+                user.get().getLastname(),
+                user.get().getEmail()
             );
             UsersResponse response = new UsersResponse(List.of(userDTO));
             return new ResponseEntity<>(response, HttpStatus.OK);
