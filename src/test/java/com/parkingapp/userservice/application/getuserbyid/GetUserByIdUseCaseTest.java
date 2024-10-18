@@ -1,4 +1,4 @@
-package com.parkingapp.userservice.application.getUserById;
+package com.parkingapp.userservice.application.getuserbyid;
 
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;

@@ -2,8 +2,8 @@ package com.parkingapp.userservice.infrastructure.entrypoint.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.parkingapp.userservice.application.getAllUsers.GetAllUsersUseCase;
-import com.parkingapp.userservice.application.getUserById.GetUserByIdUseCase;
+import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
+import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
@@ -77,7 +77,7 @@ class UserControllerContractTest {
         }
 
         @Test
-        public void shouldReturn500WhenErrorOccurs() {
+        void shouldReturn500WhenErrorOccurs() {
             // GIVEN
             when(getAllUsersUseCase.execute()).thenThrow(new RuntimeException("ops"));
 
@@ -117,7 +117,7 @@ class UserControllerContractTest {
         }
 
         @Test
-        public void shouldReturn404WhenUserNotFound() throws JsonProcessingException {
+        void shouldReturn404WhenUserNotFound() throws JsonProcessingException {
             // GIVEN
             when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.empty());
 
@@ -132,7 +132,7 @@ class UserControllerContractTest {
         }
 
         @Test
-        public void shouldReturn500WhenErrorOccurs() {
+        void shouldReturn500WhenErrorOccurs() {
             // GIVEN
             when(getUserByIdUseCase.execute(userId)).thenThrow(new RuntimeException("ops"));
 

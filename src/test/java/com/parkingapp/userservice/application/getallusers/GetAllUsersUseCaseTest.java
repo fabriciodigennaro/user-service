@@ -1,4 +1,4 @@
-package com.parkingapp.userservice.application.getAllUsers;
+package com.parkingapp.userservice.application.getallusers;
 
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
@@ -25,8 +25,7 @@ class GetAllUsersUseCaseTest {
         List<User> result = useCase.execute();
 
         // THEN
-        assertThat(result).isNotEmpty();
-        assertThat(result).isEqualTo(usersList);
+        assertThat(result).isNotEmpty().isEqualTo(usersList);
         verify(usersRepository, times(1)).getAllUsers();
     }
 }
