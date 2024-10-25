@@ -29,4 +29,17 @@ class GetAllUsersUseCaseTest {
         assertThat(result).isNotEmpty().isEqualTo(usersList);
         verify(usersRepository, times(1)).getAllUsers();
     }
+
+    @Test
+    void shouldReturnEmptyListIfIsNotUsersSaved() {
+        // GIVEN
+        when(usersRepository.getAllUsers()).thenReturn(List.of());
+
+        // WHEN
+        List<User> result = useCase.execute();
+
+        // THEN
+        assertThat(result).isEmpty();
+        verify(usersRepository, times(1)).getAllUsers();
+    }
 }
