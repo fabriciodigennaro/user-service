@@ -39,7 +39,11 @@ public class UserController {
     private final GetUserByEmailUseCase getUserByEmailUseCase;
     private final RegisterUserUseCase registerUserUseCase;
 
-    public UserController(GetAllUsersUseCase getAllUsersUseCase, GetUserByEmailUseCase getUserByEmailUseCase, RegisterUserUseCase registerUserUseCase) {
+    public UserController(
+        GetAllUsersUseCase getAllUsersUseCase,
+        GetUserByEmailUseCase getUserByEmailUseCase,
+        RegisterUserUseCase registerUserUseCase
+    ) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByEmailUseCase = getUserByEmailUseCase;
         this.registerUserUseCase = registerUserUseCase;

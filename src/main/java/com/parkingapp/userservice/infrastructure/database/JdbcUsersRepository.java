@@ -20,6 +20,8 @@ public class JdbcUsersRepository implements UsersRepository {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
+    private static final String EMAIL_PARAM = "email";
+
     @Override
     public List<User> getAllUsers() {
         return namedParameterJdbcTemplate.query(
@@ -34,7 +36,7 @@ public class JdbcUsersRepository implements UsersRepository {
     @Override
     public Optional<User> getUserByEmail(String email) {
         Map<String, Object> params = new HashMap<>();
-        params.put("email", email);
+        params.put(EMAIL_PARAM, email);
         return namedParameterJdbcTemplate.query(
                 """
                        SELECT * from users
@@ -58,7 +60,7 @@ public class JdbcUsersRepository implements UsersRepository {
         params.put("id", user.getId());
         params.put("name", user.getName());
         params.put("lastname", user.getLastname());
-        params.put("email", user.getEmail());
+        params.put(EMAIL_PARAM, user.getEmail());
         params.put("password", user.getPassword());
         params.put("role", user.getRole().name());
 
@@ -74,7 +76,7 @@ public class JdbcUsersRepository implements UsersRepository {
                 UUID.fromString(rs.getString("id")),
                 rs.getString("name"),
                 rs.getString("lastname"),
-                rs.getString("email"),
+                rs.getString(EMAIL_PARAM),
                 rs.getString("password"),
                 Roles.valueOf(rs.getString("role"))
             );
