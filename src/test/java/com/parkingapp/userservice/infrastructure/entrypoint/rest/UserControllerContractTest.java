@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
 import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
+import com.parkingapp.userservice.application.registeruser.RegisterUserUseCase;
 import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
@@ -43,6 +44,9 @@ class UserControllerContractTest {
 
     @MockBean
     private GetUserByEmailUseCase getUserByEmailUseCase;
+
+    @MockBean
+    private RegisterUserUseCase registerUserUseCase;
 
     UUID userId = UUID.randomUUID();
     String name = "john";
@@ -102,7 +106,7 @@ class UserControllerContractTest {
     @Nested
     class GetAUserById {
         @Test
-        void shouldGetAUserById() throws JsonProcessingException {
+        void shouldGetAUserByEmail() throws JsonProcessingException {
             // GIVEN
             when(getUserByEmailUseCase.execute(user1.getEmail())).thenReturn(Optional.of(user1));
             UserDTO userDto1 = new UserDTO(user1.getId(), user1.getName(), user1.getLastname(), user1.getEmail());
