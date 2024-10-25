@@ -9,6 +9,7 @@ import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.
 import com.parkingapp.userservice.application.registeruser.RegisterUserUseCase;
 import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
+import com.parkingapp.userservice.domain.user.common.IdGenerator;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.request.RegistrationRequest;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.RegistrationResponse;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -38,15 +38,18 @@ public class UserController {
     private final GetAllUsersUseCase getAllUsersUseCase;
     private final GetUserByEmailUseCase getUserByEmailUseCase;
     private final RegisterUserUseCase registerUserUseCase;
+    private final IdGenerator idGenerator;
 
     public UserController(
         GetAllUsersUseCase getAllUsersUseCase,
         GetUserByEmailUseCase getUserByEmailUseCase,
-        RegisterUserUseCase registerUserUseCase
+        RegisterUserUseCase registerUserUseCase,
+        IdGenerator idGenerator
     ) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByEmailUseCase = getUserByEmailUseCase;
         this.registerUserUseCase = registerUserUseCase;
+        this.idGenerator = idGenerator;
     }
 
     @Operation(summary = "List all users")
@@ -227,7 +230,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> register(@RequestBody @Valid RegistrationRequest request) {
         User userToSave = new User(
-            UUID.randomUUID(),
+            idGenerator.generate(),
             request.name(),
             request.lastname(),
             request.email(),

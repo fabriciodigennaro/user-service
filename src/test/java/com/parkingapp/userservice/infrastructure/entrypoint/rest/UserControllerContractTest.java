@@ -4,14 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
 import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
+import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.Successful;
+import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.UserAlreadyExist;
 import com.parkingapp.userservice.application.registeruser.RegisterUserUseCase;
 import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
+import com.parkingapp.userservice.domain.user.common.IdGenerator;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
 import com.parkingapp.userservice.infrastructure.fixtures.initializers.testannotation.ContractTest;
 import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Nested;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,11 +51,30 @@ class UserControllerContractTest {
     @MockBean
     private RegisterUserUseCase registerUserUseCase;
 
+    @MockBean
+    private IdGenerator idGenerator;
+
     UUID userId = UUID.randomUUID();
     String name = "john";
     String lastname = "doe";
     String email = "jon@mail.com";
-    User user1 = new User(userId, name, lastname, email, "123", Roles.USER);
+    String password = "123";
+    User user1 = new User(userId, name, lastname, email, password, Roles.USER);
+
+    String requestBody = String.format(
+        """
+            {
+              "name": "%s",
+              "lastname": "%s",
+              "email": "%s",
+              "password": "%s"
+            }
+        """,
+        name,
+        lastname,
+        email,
+        password
+    );
 
     @Nested
     class GetAllUsers {
@@ -158,9 +180,59 @@ class UserControllerContractTest {
         }
     }
 
+    @Nested
+    class RegisterANewUser {
+
+        @Test
+        void shouldRegisterANewUser() throws JsonProcessingException {
+            // GIVEN
+            when(idGenerator.generate()).thenReturn(userId);
+            when(registerUserUseCase.execute(user1)).thenReturn(new Successful(user1));
+            String expectedResponse = objectMapper.writeValueAsString(
+                new UserDTO(user1.getId(), user1.getName(), user1.getLastname(), user1.getEmail())
+            );
+
+            // WHEN
+            MockMvcResponse response = whenARequestToRegisterNewUserIsReceived(requestBody);
+
+            // THEN
+            response.then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body(CoreMatchers.equalTo(expectedResponse));
+            verify(registerUserUseCase).execute(user1);
+        }
+
+        @Test
+        void shouldReturnError409WhenUserAlreadyExists() {
+            // GIVEN
+            when(idGenerator.generate()).thenReturn(userId);
+            when(registerUserUseCase.execute(user1)).thenReturn(new UserAlreadyExist());
+
+            // WHEN
+            MockMvcResponse response = whenARequestToRegisterNewUserIsReceived(requestBody);
+
+            // THEN
+            response.then()
+                .statusCode(HttpStatus.CONFLICT.value());
+            verify(registerUserUseCase).execute(user1);
+        }
+
+        @Test
+        void shouldReturn500WhenErrorOccurs() {
+            // GIVEN
+            when(registerUserUseCase.execute(user1)).thenThrow(new RuntimeException("ops"));
+
+            // WHEN
+            MockMvcResponse response = whenARequestToRegisterNewUserIsReceived(requestBody);
+
+            // THEN
+            response.then()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+    }
+
     private MockMvcResponse whenARequestToGetAllUsersIsReceived() {
-        return RestAssuredMockMvc
-                .given()
+        return given()
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
                 .when()
@@ -168,8 +240,7 @@ class UserControllerContractTest {
     }
 
     private MockMvcResponse whenARequestToGetAUserByIdIsReceived(String email) {
-        return RestAssuredMockMvc
-                .given()
+        return given()
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
                 .pathParam("email", email)
@@ -177,4 +248,12 @@ class UserControllerContractTest {
                 .get("/users/{email}");
     }
 
+    private MockMvcResponse whenARequestToRegisterNewUserIsReceived(String requestBody) {
+        return given()
+            .webAppContextSetup(context)
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+            .when()
+            .post("/users/registration");
+    }
 }
