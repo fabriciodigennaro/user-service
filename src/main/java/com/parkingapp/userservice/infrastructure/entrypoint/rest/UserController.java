@@ -225,7 +225,7 @@ public class UserController {
     })
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Object> register(@ModelAttribute("user") @Valid RegistrationRequest request) {
+    public ResponseEntity<Object> register(@RequestBody @Valid RegistrationRequest request) {
         User userToSave = new User(
             UUID.randomUUID(),
             request.name(),
