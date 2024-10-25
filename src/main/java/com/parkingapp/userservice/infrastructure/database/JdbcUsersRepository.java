@@ -54,6 +54,7 @@ public class JdbcUsersRepository implements UsersRepository {
             """
                 INSERT INTO users (id, name, lastname, email, password, role, updated)
                 VALUES (:id, :name, :lastname, :email, :password, :role, CURRENT_TIMESTAMP)
+                ON CONFLICT(email) DO NOTHING;
             """;
 
         Map<String, Object> params = new HashMap<>();

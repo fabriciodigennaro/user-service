@@ -119,6 +119,57 @@ class JdbcUsersRepositoryIntegrationTest {
         assertThat(result).isEmpty();
     }
 
+    @Test
+    void shouldSaveANewUser() {
+        // GIVEN
+        User user = new User(
+            UUID.randomUUID(),
+            "name1",
+            "lastname1",
+            "user123@mail.com",
+            "1234abc",
+            Roles.USER
+        );
+
+        // WHEN
+        boolean userIsSaved = usersRepository.save(user);
+        Optional<User> newUser = usersRepository.getUserByEmail(user.getEmail());
+
+        // THEN
+        assertThat(userIsSaved).isTrue();
+        assertThat(newUser).isNotEmpty();
+    }
+
+    @Test
+    void shouldNotSaveAUserIfAlreadyExistsInDatabase() {
+        // GIVEN
+        User user = new User(
+            UUID.randomUUID(),
+            "name1",
+            "lastname1",
+            "user123@mail.com",
+            "1234abc",
+            Roles.USER
+        );
+        User duplicatedUser = new User(
+            UUID.randomUUID(),
+            "duplicated name",
+            "duplicated lastname",
+            "user123@mail.com",
+            "1234",
+            Roles.USER
+        );
+        givenExistingUser(user);
+
+        // WHEN
+        boolean userIsSaved = usersRepository.save(duplicatedUser);
+        Optional<User> newUser = usersRepository.getUserByEmail(user.getEmail());
+
+        // THEN
+        assertThat(userIsSaved).isFalse();
+        assertThat(newUser).isNotEmpty();
+    }
+
     private void givenExistingUser(User user) {
         MapSqlParameterSource params = new MapSqlParameterSource()
             .addValue("id", user.getId())
