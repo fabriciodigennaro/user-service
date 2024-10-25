@@ -60,7 +60,7 @@ public class JdbcUsersRepository implements UsersRepository {
         params.put("lastname", user.getLastname());
         params.put("email", user.getEmail());
         params.put("password", user.getPassword());
-        params.put("role", user.getRole());
+        params.put("role", user.getRole().name());
 
         int rowsAffected = namedParameterJdbcTemplate.update(sql, params);
 

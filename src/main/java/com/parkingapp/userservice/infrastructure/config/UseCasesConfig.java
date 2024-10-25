@@ -2,6 +2,7 @@ package com.parkingapp.userservice.infrastructure.config;
 
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
 import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
+import com.parkingapp.userservice.application.registeruser.RegisterUserUseCase;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,13 @@ public class UseCasesConfig {
         UsersRepository usersRepository
     ) {
         return new GetUserByEmailUseCase(usersRepository);
+    }
+
+    @Bean
+    public RegisterUserUseCase registerUserUseCase(
+        UsersRepository usersRepository
+    ) {
+        return new RegisterUserUseCase(usersRepository);
     }
 }
 

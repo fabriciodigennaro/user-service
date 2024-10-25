@@ -1,25 +1,26 @@
 package com.parkingapp.userservice.application.registeruser;
 
+import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.RegisterFailure;
+import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.Successful;
+import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.UserAlreadyExist;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 
-import java.util.Optional;
-
 public class RegisterUserUseCase {
     private final UsersRepository usersRepository;
-
 
     public RegisterUserUseCase(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
 
-    public Optional<User> execute(User user) {
-        boolean userNotExist = usersRepository.getUserByEmail(user.getEmail()).isEmpty();
+    public RegisterUserResponse execute(User user) {
+        boolean userAlreadyExist = usersRepository.getUserByEmail(user.getEmail()).isPresent();
 
-        if (userNotExist) {
-            boolean isSaved = usersRepository.save(user);
-            return isSaved ? Optional.of(user) : Optional.empty();
+        if (userAlreadyExist) {
+            return new UserAlreadyExist();
         }
-        return Optional.empty();
+
+        boolean isSaved = usersRepository.save(user);
+        return isSaved ? new Successful(user) : new RegisterFailure();
     }
 }
