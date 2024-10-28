@@ -18,19 +18,24 @@ import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 @ContractTest
 @WebMvcTest(controllers = UserController.class)
@@ -200,6 +205,84 @@ class UserControllerContractTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body(CoreMatchers.equalTo(expectedResponse));
             verify(registerUserUseCase).execute(user1);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "name, Name is required",
+            "lastname, Lastname is required",
+            "email, Email is required",
+            "password, Password is required"
+        })
+        void shouldReturnError400WhenFieldIsNull(String field, String expectedMessage) throws JsonProcessingException {
+            // GIVEN
+            Map<String, Object> userFields = new HashMap<>();
+            userFields.put("name", name);
+            userFields.put("lastname", lastname);
+            userFields.put("email", email);
+            userFields.put("password", password);
+            userFields.put(field, null);
+
+            String requestBodyWithNulls = new ObjectMapper().writeValueAsString(userFields);
+
+            // WHEN
+            MockMvcResponse response = whenARequestToRegisterNewUserIsReceived(requestBodyWithNulls);
+
+            // THEN
+            response.then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(field, equalTo(expectedMessage));
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "name, Name is required",
+            "lastname, Lastname is required",
+            "email, Email is required",
+            "password, Password is required"
+        })
+        void shouldReturnError400WhenFieldIsBlank(String field, String expectedMessage) throws JsonProcessingException {
+            // GIVEN
+            Map<String, Object> userFields = new HashMap<>();
+            userFields.put("name", name);
+            userFields.put("lastname", lastname);
+            userFields.put("email", email);
+            userFields.put("password", password);
+            userFields.put(field, "");
+
+            String requestBodyWithBlanks = new ObjectMapper().writeValueAsString(userFields);
+
+            // WHEN
+            MockMvcResponse response = whenARequestToRegisterNewUserIsReceived(requestBodyWithBlanks);
+
+            // THEN
+            response.then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body(field, equalTo(expectedMessage));
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+            "incorrect.mail, Email should be valid",
+            "invalid@.com, Email should be valid"
+        })
+        void shouldReturnError400WhenEmailIsInvalid(String email, String expectedMessage) throws JsonProcessingException {
+            // GIVEN
+            Map<String, Object> userFields = new HashMap<>();
+            userFields.put("name", name);
+            userFields.put("lastname", lastname);
+            userFields.put("email", email);
+            userFields.put("password", password);
+
+            String requestBodyWithInvalidEmail = new ObjectMapper().writeValueAsString(userFields);
+
+            // WHEN
+            MockMvcResponse response = whenARequestToRegisterNewUserIsReceived(requestBodyWithInvalidEmail);
+
+            // THEN
+            response.then()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .body("email", equalTo(expectedMessage));
         }
 
         @Test
