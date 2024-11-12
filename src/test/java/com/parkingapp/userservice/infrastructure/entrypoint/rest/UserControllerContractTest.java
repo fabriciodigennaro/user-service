@@ -63,7 +63,7 @@ class UserControllerContractTest {
     String name = "john";
     String lastname = "doe";
     String email = "jon@mail.com";
-    String password = "123";
+    String password = "abcd12345";
     User user1 = new User(userId, name, lastname, email, password, Roles.USER);
 
     String requestBody = String.format(
@@ -131,7 +131,7 @@ class UserControllerContractTest {
     }
 
     @Nested
-    class GetAUserById {
+    class GetAUserByEmail {
         @Test
         void shouldGetAUserByEmail() throws JsonProcessingException {
             // GIVEN
@@ -209,10 +209,10 @@ class UserControllerContractTest {
 
         @ParameterizedTest
         @CsvSource({
-            "name, Name is required",
-            "lastname, Lastname is required",
-            "email, Email is required",
-            "password, Password is required"
+            "name, Name must be valid and between 2 and 25 characters",
+            "lastname, Lastname must be valid and be between 2 and 50 characters",
+            "email, Email is required and should be valid.",
+            "password, Password must be between 8 and 16 characters"
         })
         void shouldReturnError400WhenFieldIsNull(String field, String expectedMessage) throws JsonProcessingException {
             // GIVEN
@@ -236,10 +236,10 @@ class UserControllerContractTest {
 
         @ParameterizedTest
         @CsvSource({
-            "name, Name is required",
-            "lastname, Lastname is required",
-            "email, Email is required",
-            "password, Password is required"
+            "name, Name must be valid and between 2 and 25 characters",
+            "lastname, Lastname must be valid and be between 2 and 50 characters",
+            "email, Email is required and should be valid.",
+            "password, Password must be between 8 and 16 characters"
         })
         void shouldReturnError400WhenFieldIsBlank(String field, String expectedMessage) throws JsonProcessingException {
             // GIVEN
@@ -263,8 +263,8 @@ class UserControllerContractTest {
 
         @ParameterizedTest
         @CsvSource({
-            "incorrect.mail, Email should be valid",
-            "invalid@.com, Email should be valid"
+            "incorrect.mail, Email is required and should be valid.",
+            "invalid@.com, Email is required and should be valid."
         })
         void shouldReturnError400WhenEmailIsInvalid(String email, String expectedMessage) throws JsonProcessingException {
             // GIVEN
@@ -319,7 +319,7 @@ class UserControllerContractTest {
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/users");
+                .get("/api/v1/users");
     }
 
     private MockMvcResponse whenARequestToGetAUserByIdIsReceived(String email) {
@@ -328,7 +328,7 @@ class UserControllerContractTest {
                 .contentType(ContentType.JSON)
                 .pathParam("email", email)
                 .when()
-                .get("/users/{email}");
+                .get("/api/v1/users/{email}");
     }
 
     private MockMvcResponse whenARequestToRegisterNewUserIsReceived(String requestBody) {
@@ -337,6 +337,6 @@ class UserControllerContractTest {
             .contentType(ContentType.JSON)
             .body(requestBody)
             .when()
-            .post("/users/registration");
+            .post("/api/v1/users");
     }
 }
