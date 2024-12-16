@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
 import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
+import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.Successful;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.UserAlreadyExist;
 import com.parkingapp.userservice.application.registeruser.RegisterUserUseCase;
@@ -52,6 +53,9 @@ class UserControllerContractTest {
 
     @MockBean
     private GetUserByEmailUseCase getUserByEmailUseCase;
+
+    @MockBean
+    private GetUserByIdUseCase getUserByIdUseCase;
 
     @MockBean
     private RegisterUserUseCase registerUserUseCase;
@@ -133,9 +137,9 @@ class UserControllerContractTest {
     @Nested
     class GetAUserByEmail {
         @Test
-        void shouldGetAUserByEmail() throws JsonProcessingException {
+        void shouldGetAUserById() throws JsonProcessingException {
             // GIVEN
-            when(getUserByEmailUseCase.execute(user1.getEmail())).thenReturn(Optional.of(user1));
+            when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.of(user1));
             UserDTO userDto1 = new UserDTO(user1.getId(), user1.getName(), user1.getLastname(), user1.getEmail());
 
             String expectedResponse = objectMapper.writeValueAsString(
@@ -145,43 +149,43 @@ class UserControllerContractTest {
             );
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getEmail());
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getId());
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .body(CoreMatchers.equalTo(expectedResponse));
 
-            verify(getUserByEmailUseCase).execute(user1.getEmail());
+            verify(getUserByIdUseCase).execute(user1.getId());
         }
 
         @Test
         void shouldReturn404WhenUserNotFound() {
             // GIVEN
-            when(getUserByEmailUseCase.execute(user1.getEmail())).thenReturn(Optional.empty());
+            when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.empty());
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getEmail());
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getId());
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.NOT_FOUND.value());
 
-            verify(getUserByEmailUseCase).execute(user1.getEmail());
+            verify(getUserByIdUseCase).execute(user1.getId());
         }
 
         @Test
         void shouldReturn500WhenErrorOccurs() {
             // GIVEN
-            when(getUserByEmailUseCase.execute(email)).thenThrow(new RuntimeException("ops"));
+            when(getUserByIdUseCase.execute(user1.getId())).thenThrow(new RuntimeException("ops"));
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(email);
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getId());
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            verify(getUserByEmailUseCase).execute(email);
+            verify(getUserByIdUseCase).execute(user1.getId());
         }
     }
 
@@ -322,13 +326,13 @@ class UserControllerContractTest {
                 .get("/api/v1/users");
     }
 
-    private MockMvcResponse whenARequestToGetAUserByIdIsReceived(String email) {
+    private MockMvcResponse whenARequestToGetAUserByIdIsReceived(UUID userId) {
         return given()
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
-                .pathParam("email", email)
+                .pathParam("id", userId)
                 .when()
-                .get("/api/v1/users/{email}");
+                .get("/api/v1/users/{id}");
     }
 
     private MockMvcResponse whenARequestToRegisterNewUserIsReceived(String requestBody) {
