@@ -1,7 +1,7 @@
 package com.parkingapp.userservice.infrastructure.entrypoint.rest;
 
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
-import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
+import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.RegisterFailure;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.Successful;
@@ -30,24 +30,25 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @Tag(name = "Users", description = "All about users")
 public class UserController {
     private final GetAllUsersUseCase getAllUsersUseCase;
-    private final GetUserByEmailUseCase getUserByEmailUseCase;
+    private final GetUserByIdUseCase getUserByIdUseCase;
     private final RegisterUserUseCase registerUserUseCase;
     private final IdGenerator idGenerator;
 
     public UserController(
         GetAllUsersUseCase getAllUsersUseCase,
-        GetUserByEmailUseCase getUserByEmailUseCase,
+        GetUserByIdUseCase getUserByIdUseCase,
         RegisterUserUseCase registerUserUseCase,
         IdGenerator idGenerator
     ) {
         this.getAllUsersUseCase = getAllUsersUseCase;
-        this.getUserByEmailUseCase = getUserByEmailUseCase;
+        this.getUserByIdUseCase = getUserByIdUseCase;
         this.registerUserUseCase = registerUserUseCase;
         this.idGenerator = idGenerator;
     }
@@ -135,7 +136,7 @@ public class UserController {
                 examples = @ExampleObject(
                     name = "User not found",
                     summary = "Example of user not found case",
-                    value = "{\"message\": \"User example@mail.com not found\"}"
+                    value = "{\"message\": \"User not found\"}"
                 )
             )
         ),
@@ -153,12 +154,12 @@ public class UserController {
             )
         )
     })
-    @GetMapping("/{email}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getUserByEmail(
+    public ResponseEntity<Object> getUserById(
         @Parameter(description = "UUID of the user to be fetched", example = "406dcf63-d2da-4d09-be5f-f2c53778c33d")
-        @PathVariable String email) {
-        Optional<User> user = getUserByEmailUseCase.execute(email);
+        @PathVariable UUID id) {
+        Optional<User> user = getUserByIdUseCase.execute(id);
 
         if (user.isPresent()) {
             UserDTO userDTO = new UserDTO(
@@ -226,7 +227,7 @@ public class UserController {
             )
         )
     })
-    @PostMapping("/registration")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Object> register(@RequestBody @Valid RegistrationRequest request) {
         User userToSave = new User(

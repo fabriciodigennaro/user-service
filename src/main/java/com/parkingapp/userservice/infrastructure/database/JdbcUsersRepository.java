@@ -34,6 +34,21 @@ public class JdbcUsersRepository implements UsersRepository {
     }
 
     @Override
+    public Optional<User> getUserById(UUID userId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        return namedParameterJdbcTemplate.query(
+                """
+                       SELECT * from users
+                       WHERE id = :userId
+                    """,
+                params,
+                new UserRowMapper()
+            )
+            .stream().findFirst();
+    }
+
+    @Override
     public Optional<User> getUserByEmail(String email) {
         Map<String, Object> params = new HashMap<>();
         params.put(EMAIL_PARAM, email);
