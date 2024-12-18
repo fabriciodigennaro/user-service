@@ -4,6 +4,7 @@ import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
 import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
 import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
 import com.parkingapp.userservice.application.registeruser.RegisterUserUseCase;
+import com.parkingapp.userservice.domain.service.PasswordEncryptor;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +35,10 @@ public class UseCasesConfig {
 
     @Bean
     public RegisterUserUseCase registerUserUseCase(
-        UsersRepository usersRepository
+        UsersRepository usersRepository,
+        PasswordEncryptor passwordEncryptor
     ) {
-        return new RegisterUserUseCase(usersRepository);
+        return new RegisterUserUseCase(usersRepository, passwordEncryptor);
     }
 }
 

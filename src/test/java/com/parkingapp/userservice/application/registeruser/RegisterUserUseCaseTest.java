@@ -3,6 +3,7 @@ package com.parkingapp.userservice.application.registeruser;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.RegisterFailure;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.Successful;
 import com.parkingapp.userservice.application.registeruser.RegisterUserResponse.UserAlreadyExist;
+import com.parkingapp.userservice.domain.service.PasswordEncryptor;
 import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
@@ -20,7 +21,8 @@ import static org.mockito.Mockito.when;
 class RegisterUserUseCaseTest {
 
     private final UsersRepository usersRepository = mock(UsersRepository.class);
-    private final RegisterUserUseCase useCase = new RegisterUserUseCase(usersRepository);
+    private final PasswordEncryptor passwordEncryptor = mock(PasswordEncryptor.class);
+    private final RegisterUserUseCase useCase = new RegisterUserUseCase(usersRepository, passwordEncryptor);
 
     User user = new User(
         UUID.randomUUID(),
