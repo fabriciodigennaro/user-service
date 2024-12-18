@@ -20,6 +20,7 @@ public class RegisterUserUseCase {
             return new UserAlreadyExist();
         }
 
+        // TODO hash password before saving
         boolean isSaved = usersRepository.save(user);
         return isSaved ? new Successful(user) : new RegisterFailure();
     }
