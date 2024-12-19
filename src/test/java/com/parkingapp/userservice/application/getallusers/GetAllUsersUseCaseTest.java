@@ -1,5 +1,6 @@
 package com.parkingapp.userservice.application.getallusers;
 
+import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.domain.user.UsersRepository;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ class GetAllUsersUseCaseTest {
     @Test
     void shouldReturnAllUsers() {
         // GIVEN
-        List<User> usersList = List.of(new User(UUID.randomUUID(), "name", "lastname", "dummy@email.com", "1234"));
+        List<User> usersList = List.of(new User(UUID.randomUUID(), "name", "lastname", "dummy@email.com", "1234", Roles.USER));
         when(usersRepository.getAllUsers()).thenReturn(usersList);
 
         // WHEN
@@ -26,6 +27,19 @@ class GetAllUsersUseCaseTest {
 
         // THEN
         assertThat(result).isNotEmpty().isEqualTo(usersList);
+        verify(usersRepository, times(1)).getAllUsers();
+    }
+
+    @Test
+    void shouldReturnEmptyListIfIsNotUsersSaved() {
+        // GIVEN
+        when(usersRepository.getAllUsers()).thenReturn(List.of());
+
+        // WHEN
+        List<User> result = useCase.execute();
+
+        // THEN
+        assertThat(result).isEmpty();
         verify(usersRepository, times(1)).getAllUsers();
     }
 }

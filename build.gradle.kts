@@ -25,11 +25,14 @@ dependencies {
 	val ARCHUNIT = "1.3.0"
 	val ASSERTJ = "3.26.3"
 	val FLYWAY = "9.11.0"
+	val JUNIT = "5.11.0"
+	val JWT = "0.12.6"
 	val LOMBOK = "1.18.34"
 	val MOCKITO = "5.+"
 	val OPEN_API = "2.6.0"
 	val POSTGRE = "42.7.4"
 	val REST_ASSURED = "5.5.0"
+	val TEST_CONTAINERS = "1.20.1"
 
 	annotationProcessor("org.projectlombok:lombok:$LOMBOK")
 
@@ -38,22 +41,26 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$OPEN_API")
 	implementation("org.jetbrains:annotations:$ANNOTATIONS")
 	implementation("org.postgresql:postgresql:$POSTGRE")
 	implementation("org.flywaydb:flyway-core:$FLYWAY")
-	implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	implementation("io.jsonwebtoken:jjwt-api:$JWT")
+	implementation("io.jsonwebtoken:jjwt-impl:$JWT")
+	implementation("io.jsonwebtoken:jjwt-jackson:$JWT")
 
 	testAnnotationProcessor("org.projectlombok:lombok:$LOMBOK")
 
 	testCompileOnly("org.projectlombok:lombok:$LOMBOK")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testImplementation(platform("org.junit:junit-bom:5.11.0"))
+	testImplementation(platform("org.junit:junit-bom:$JUNIT"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.assertj:assertj-core:$ASSERTJ")
 	testImplementation("org.mockito:mockito-core:$MOCKITO")
-	testImplementation(platform("org.testcontainers:testcontainers-bom:1.20.1"))
+	testImplementation(platform("org.testcontainers:testcontainers-bom:$TEST_CONTAINERS"))
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:postgresql")
 	testImplementation("com.tngtech.archunit:archunit:$ARCHUNIT")

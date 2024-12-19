@@ -3,13 +3,14 @@ package com.parkingapp.userservice.infrastructure.entrypoint.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.parkingapp.userservice.application.getallusers.GetAllUsersUseCase;
+import com.parkingapp.userservice.application.getuserbyemail.GetUserByEmailUseCase;
 import com.parkingapp.userservice.application.getuserbyid.GetUserByIdUseCase;
+import com.parkingapp.userservice.domain.user.Roles;
 import com.parkingapp.userservice.domain.user.User;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UserDTO;
 import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.UsersResponse;
 import com.parkingapp.userservice.infrastructure.fixtures.initializers.testannotation.ContractTest;
 import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.module.mockmvc.response.MockMvcResponse;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,20 +43,31 @@ class UserControllerContractTest {
     private GetAllUsersUseCase getAllUsersUseCase;
 
     @MockBean
+    private GetUserByEmailUseCase getUserByEmailUseCase;
+
+    @MockBean
     private GetUserByIdUseCase getUserByIdUseCase;
 
     UUID userId = UUID.randomUUID();
     String name = "john";
     String lastname = "doe";
     String email = "jon@mail.com";
-    User user1 = new User(userId, name, lastname, email, "123");
+    String password = "abcd12345";
+    User user1 = new User(userId, name, lastname, email, password, Roles.USER);
 
     @Nested
     class GetAllUsers {
         @Test
         void shouldGetAllUsers() throws JsonProcessingException {
             // GIVEN
-            User user2 = new User(UUID.randomUUID(), "max", "steel", "max@mail.com", "12");
+            User user2 = new User(
+                UUID.randomUUID(),
+                "max",
+                "steel",
+                "max@mail.com",
+                "12",
+                Roles.USER
+            );
             when(getAllUsersUseCase.execute()).thenReturn(List.of(user1, user2));
             UserDTO userDto1 = new UserDTO(user1.getId(), user1.getName(), user1.getLastname(), user1.getEmail());
             UserDTO userDto2 = new UserDTO(user2.getId(), user2.getName(), user2.getLastname(), user2.getEmail());
@@ -92,7 +105,7 @@ class UserControllerContractTest {
     }
 
     @Nested
-    class GetAUserById {
+    class GetAUserByEmail {
         @Test
         void shouldGetAUserById() throws JsonProcessingException {
             // GIVEN
@@ -117,7 +130,7 @@ class UserControllerContractTest {
         }
 
         @Test
-        void shouldReturn404WhenUserNotFound() throws JsonProcessingException {
+        void shouldReturn404WhenUserNotFound() {
             // GIVEN
             when(getUserByIdUseCase.execute(user1.getId())).thenReturn(Optional.empty());
 
@@ -134,35 +147,32 @@ class UserControllerContractTest {
         @Test
         void shouldReturn500WhenErrorOccurs() {
             // GIVEN
-            when(getUserByIdUseCase.execute(userId)).thenThrow(new RuntimeException("ops"));
+            when(getUserByIdUseCase.execute(user1.getId())).thenThrow(new RuntimeException("ops"));
 
             // WHEN
-            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(userId);
+            MockMvcResponse response = whenARequestToGetAUserByIdIsReceived(user1.getId());
 
             // THEN
             response.then()
                     .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            verify(getUserByIdUseCase).execute(userId);
+            verify(getUserByIdUseCase).execute(user1.getId());
         }
     }
 
     private MockMvcResponse whenARequestToGetAllUsersIsReceived() {
-        return RestAssuredMockMvc
-                .given()
+        return given()
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/users");
+                .get("/api/v1/users");
     }
 
     private MockMvcResponse whenARequestToGetAUserByIdIsReceived(UUID userId) {
-        return RestAssuredMockMvc
-                .given()
+        return given()
                 .webAppContextSetup(context)
                 .contentType(ContentType.JSON)
-                .pathParam("id", userId.toString())
+                .pathParam("id", userId)
                 .when()
-                .get("/users/{id}");
+                .get("/api/v1/users/{id}");
     }
-
 }

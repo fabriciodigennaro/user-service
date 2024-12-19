@@ -9,6 +9,7 @@ import com.parkingapp.userservice.infrastructure.entrypoint.rest.response.error.
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,16 +21,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/users")
-@Tag(name = "Users", description = "Get users data")
+@RequestMapping("/api/v1/users")
+@Tag(name = "Users", description = "All about users")
 public class UserController {
     private final GetAllUsersUseCase getAllUsersUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
 
-    public UserController(GetAllUsersUseCase getAllUsersUseCase, GetUserByIdUseCase getUserByIdUseCase) {
+    public UserController(
+        GetAllUsersUseCase getAllUsersUseCase,
+        GetUserByIdUseCase getUserByIdUseCase
+    ) {
         this.getAllUsersUseCase = getAllUsersUseCase;
         this.getUserByIdUseCase = getUserByIdUseCase;
     }
@@ -48,22 +51,28 @@ public class UserController {
         @ApiResponse(
             responseCode = "400",
             description = "Bad request",
-            content = {
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class)
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    name = "Invalid input",
+                    summary = "Example of a bad request response",
+                    value = "{\"message\": \"Invalid input provided\"}"
                 )
-            }
+            )
         ),
         @ApiResponse(
             responseCode = "500",
             description = "Internal server error",
-            content = {
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class)
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    name = "Server error",
+                    summary = "Example of internal server error",
+                    value = "{\"message\": \"Unexpected server error\"}"
                 )
-            }
+            )
         )
     })
 
@@ -92,35 +101,43 @@ public class UserController {
         @ApiResponse(
             responseCode = "400",
             description = "Bad request",
-            content = {
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class)
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    name = "Invalid input",
+                    summary = "Example of a bad request response",
+                    value = "{\"message\": \"Invalid input provided\"}"
                 )
-            }
+            )
         ),
         @ApiResponse(
             responseCode = "404",
             description = "User not found",
-            content = {
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class)
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    name = "User not found",
+                    summary = "Example of user not found case",
+                    value = "{\"message\": \"User not found\"}"
                 )
-            }
+            )
         ),
         @ApiResponse(
             responseCode = "500",
             description = "Internal server error",
-            content = {
-                @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = ErrorResponse.class)
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = ErrorResponse.class),
+                examples = @ExampleObject(
+                    name = "Server error",
+                    summary = "Example of internal server error",
+                    value = "{\"message\": \"Unexpected server error\"}"
                 )
-            }
+            )
         )
     })
-
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getUserById(

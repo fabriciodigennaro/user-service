@@ -13,7 +13,7 @@ public class GetUserByIdUseCase {
         this.usersRepository = usersRepository;
     }
 
-    public Optional<User> execute(UUID id) {
-        return usersRepository.getUserById(id);
+    public Optional<User> execute(UUID userId) {
+        return usersRepository.getUserById(userId);
     }
 }

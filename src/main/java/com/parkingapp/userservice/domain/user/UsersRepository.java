@@ -7,4 +7,6 @@ import java.util.UUID;
 public interface UsersRepository {
     List<User> getAllUsers();
     Optional<User> getUserById(UUID userId);
+    Optional<User> getUserByEmail(String email);
+    boolean save(User user);
 }
