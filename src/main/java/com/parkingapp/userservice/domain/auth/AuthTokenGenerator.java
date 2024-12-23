@@ -1,7 +1,8 @@
 package com.parkingapp.userservice.domain.auth;
 
-import java.util.UUID;
-
 public interface AuthTokenGenerator {
-    AuthTokens generateAuthTokens(UUID userId);
+    String generateToken(String username);
+    String generateRefreshToken(String username);
+    boolean validateToken(String token);
+    String extractUsername(String token);
 }

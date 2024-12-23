@@ -48,8 +48,9 @@ dependencies {
 	implementation("org.postgresql:postgresql:$POSTGRE")
 	implementation("org.flywaydb:flyway-core:$FLYWAY")
 	implementation("io.jsonwebtoken:jjwt-api:$JWT")
-	implementation("io.jsonwebtoken:jjwt-impl:$JWT")
-	implementation("io.jsonwebtoken:jjwt-jackson:$JWT")
+
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:$JWT")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:$JWT")
 
 	testAnnotationProcessor("org.projectlombok:lombok:$LOMBOK")
 
